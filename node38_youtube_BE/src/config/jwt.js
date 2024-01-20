@@ -43,22 +43,22 @@ const authenticateToken = async (req, res, next) => {
       return;
     }
 
+    // step 3: check if user_id exists in DB
     let user_id = tokenVerificationResult.data?.user_id;
-    console.log(user_id);
+    // let {user_id} = tokenVerificationResult.data;
     if (!user_id) {
       res.status(401).send("Invalid token");
       return;
     }
 
-    // step 3: check if user_id exists in DB
-    let checkUser = await model.users.findOne({
+    let checkedUser = await model.users.findOne({
       where: {
         user_id: user_id,
       },
     });
 
-    if (!checkUser) {
-      res.status(401).send("Invalid token");
+    if (!checkedUser) {
+      res.status(401).send(tokenVerificationResult.message);
       return;
     }
     next(); // if a token is present & valid, this pass the controll to the next handler, i.e. storage.single("file")
